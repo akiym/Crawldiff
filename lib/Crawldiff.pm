@@ -21,6 +21,11 @@ has agent => (
     },
 );
 
+has session => (
+    is => 'rw',
+    default => sub { '' },
+);
+
 has log_dir => (
     is => 'rw',
     default => sub { 'log' },
@@ -34,9 +39,14 @@ sub crawl {
     $filename =~ s/\.html?$//;
     $filename = sprintf '%s-%s-%s.html', $uri->host, $filename, $t->strftime('%Y%m%d-%H%M%S');
     my $path = path($self->log_dir, $filename);
-    $self->agent->get($url,
+    my $res = $self->agent->get($url,
+        'Cookie' => $self->session,
         ':content_file' => $path->stringify,
     );
+    if ($res->is_error) {
+        unlink $path->stringify;
+    }
+    return $res;
 }
 
 sub diff {
