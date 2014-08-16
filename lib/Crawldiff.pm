@@ -48,17 +48,22 @@ sub diff {
 sub diff_last {
     my ($self, $url) = @_;
 
-    my $uri = URI->new($url);
-
-    my @files = sort { stat($b)->mtime <=> stat($a)->mtime }
-        File::Find::Rule->file()
-            ->name($uri->host . '-*.html')
-            ->in($self->log_dir);
-
+    my @files = $self->get_files($url);
     return if @files < 2;
 
     my ($file1, $file2) = @files;
     return $self->diff($file1, $file2);
+}
+
+sub get_files {
+    my ($self, $url) = @_;
+    my $uri = URI->new($url);
+    my $filename = basename($url);
+    my @files = sort { stat($b)->mtime <=> stat($a)->mtime }
+        File::Find::Rule->file()
+            ->name($uri->host . '-' . $filename . '-*.html')
+            ->in($self->log_dir);
+    return @files;
 }
 
 1;
