@@ -51,7 +51,7 @@ sub crawl {
 
 sub diff {
     my ($self, $file1, $file2) = @_;
-    my $diff = Text::Diff::diff($file1, $file2);
+    my $diff = Text::Diff::diff($file2, $file1);
     return $diff;
 }
 
