@@ -33,7 +33,6 @@ has log_dir => (
 
 sub crawl {
     my ($self, $url) = @_;
-    my $t = localtime();
     my $res = $self->agent->get($url,
         'Cookie' => $self->session,
     );
@@ -48,8 +47,8 @@ sub get_filename {
     my $uri = URI->new($url);
     my $filename = basename($url);
     $filename =~ s/\.html?$//;
-    my $port = $uri->post == 80 ? '' : ':' . $uri->post;
-    $filename = sprintf '%s-%s-%s.html', $uri->host . $port, $filename, $t->strftime('%Y%m%d-%H%M%S');
+    my $port = $uri->port == 80 ? '' : ':' . $uri->port;
+    $filename = sprintf '%s-%s-%s.html', $uri->host . $port, $filename, localtime->strftime('%Y%m%d-%H%M%S');
     my $path = path($self->log_dir, $filename);
     return $path->stringify;
 }
