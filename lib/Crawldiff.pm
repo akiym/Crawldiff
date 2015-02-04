@@ -34,11 +34,6 @@ has log_dir => (
 sub crawl {
     my ($self, $url) = @_;
     my $t = localtime();
-    my $uri = URI->new($url);
-    my $filename = basename($url);
-    $filename =~ s/\.html?$//;
-    $filename = sprintf '%s-%s-%s.html', $uri->host, $filename, $t->strftime('%Y%m%d-%H%M%S');
-    my $path = path($self->log_dir, $filename);
     my $res = $self->agent->get($url,
         'Cookie' => $self->session,
     );
@@ -46,6 +41,17 @@ sub crawl {
     open my $fh, '>', $filename or die $!;
     print {$fh} $res->content;
     return $res;
+}
+
+sub get_filename {
+    my ($self, $url) = @_;
+    my $uri = URI->new($url);
+    my $filename = basename($url);
+    $filename =~ s/\.html?$//;
+    my $port = $uri->post == 80 ? '' : ':' . $uri->post;
+    $filename = sprintf '%s-%s-%s.html', $uri->host . $port, $filename, $t->strftime('%Y%m%d-%H%M%S');
+    my $path = path($self->log_dir, $filename);
+    return $path->stringify;
 }
 
 sub diff {
