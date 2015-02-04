@@ -41,11 +41,10 @@ sub crawl {
     my $path = path($self->log_dir, $filename);
     my $res = $self->agent->get($url,
         'Cookie' => $self->session,
-        ':content_file' => $path->stringify,
     );
-    if ($res->is_error) {
-        unlink $path->stringify;
-    }
+    my $filename = $self->get_filename($url);
+    open my $fh, '>', $filename or die $!;
+    print {$fh} $res->content;
     return $res;
 }
 
