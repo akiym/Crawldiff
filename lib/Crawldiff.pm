@@ -63,7 +63,7 @@ sub diff_last {
     my ($self, $url) = @_;
 
     my @files = $self->get_files($url);
-    return if @files < 2;
+    return (undef, 1) if @files < 2;
 
     my ($file1, $file2) = @files;
     return $self->diff($file1, $file2);
