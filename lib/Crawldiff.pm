@@ -39,7 +39,7 @@ sub crawl {
     my $filename = $self->get_filename($url);
     open my $fh, '>', $filename or die $!;
     print {$fh} $res->content;
-    return $res;
+    return ($res, $filename);
 }
 
 sub get_filename {
